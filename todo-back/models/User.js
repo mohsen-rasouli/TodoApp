@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true
-    }
+    },
+    token: String,
 });
 
 const User = mongoose.model('User', userSchema);
