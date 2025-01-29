@@ -32,7 +32,7 @@ router.post('/new', async (req, res) => {
     try {
         const newUser= new User({
             username: user.username,
-            password: bcryptjs.hashSync(user.password, 10), //user.password,
+            password: bcryptjs.hash(user.password, 10), //user.password,
             email: user.email
         })
 
@@ -48,5 +48,32 @@ router.post('/new', async (req, res) => {
 
 });
 
+router.post('/auth', async (req, res) => {
+
+    const data = req.body;
+
+    try {
+        const user = await User.findOne({username: data.username});
+        if(!user) {
+            return res.status(401).json({message: 'User not found', status: 'error'});
+        }
+
+        if(!bcryptjs.compare(data.password, user.password)) {
+            return res.status(401).json({message: 'Password incorrect', status: 'error'});
+        }
+
+        const user_data = user.toObject();
+        delete user_data.password;
+
+        await res.status(200).json({message: 'User authenticated', status: 'ok', user: user_data});
+
+    } catch(error) {
+        res.status(500).json({message: error.message, status: 'error'});
+        console.error(`Error: ${error.message}`);
+    }
+
+    
+
+});
 
 module.exports = router;
