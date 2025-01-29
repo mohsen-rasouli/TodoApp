@@ -1,0 +1,22 @@
+# فولدرهای Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# متغیرهای محیطی
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# پوشه‌های مخصوص VS Code
+.vscode/
+.history/
+
+# کش‌ها و فایل‌های موقت
+.DS_Store
+Thumbs.db
+.idea/
