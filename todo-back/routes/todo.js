@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
+const User = require('../models/User');
 const ToDo = require('../models/ToDo');
 
 const token_secret = process.env.JSON_WEB_TOKEN_SECRET;
@@ -27,15 +28,6 @@ const verifyToken = (req, res, next) => {
 };
 
 //routes
-router.get('/', verifyToken, (req, res) => {
-    const data = {
-        message: 'To Do App',
-        status: 'ok',
-        route: '/'
-    }
-
-    res.status(200).json(data);
-});
 
 router.post('/new', verifyToken, async (req, res) => {
 
@@ -61,5 +53,34 @@ router.post('/new', verifyToken, async (req, res) => {
 
     }
 });
+
+router.get('/:id', verifyToken, async (req, res) => {
+
+    const user_id = req.params.id;
+
+    try {
+
+        const todoList = await ToDo.find({user_id: user_id});
+
+        if(todoList.length === 0) {
+            return res.status(404).json({message: 'To Do not found', status: 'error'});
+        }
+
+        const data = {
+            message: 'To Do App',
+            status: 'ok',
+            route: '/' + req.params.id,
+            todos: todoList
+        }
+    
+        res.status(200).json(data);
+
+    } catch (error) {
+        res.status(500).json({message: error.message, status: 'error'});
+        console.error(`Error: ${error.message}`);
+    }
+
+});
+
 
 module.exports = router;

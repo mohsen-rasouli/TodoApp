@@ -84,7 +84,6 @@ router.post('/auth', async (req, res) => {
         console.error(`Error: ${error.message}`);
     }
 
-
 });
 
 router.get('/verify', verifyToken, (req, res) => {
