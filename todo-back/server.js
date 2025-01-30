@@ -4,8 +4,9 @@ require('dotenv').config();
 
 const app = express();
 
-//impirt routes
-const user = require('./routes/user');
+// Import routes
+const userRouter = require('./routes/user');
+const todoRouter = require('./routes/todo');
 
 // Connect to MongoDB
 
@@ -27,7 +28,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/user', user);
+app.use('/user', userRouter);
+app.use('/todo', todoRouter)
 
 
 app.get( '/', (req, res) => {
