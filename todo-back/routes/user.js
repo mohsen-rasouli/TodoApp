@@ -59,32 +59,45 @@ router.post('/new', async (req, res) => {
 });
 
 router.post('/auth', async (req, res) => {
-
     const data = req.body;
 
     try {
-        const user = await User.findOne({username: data.username});
-
-        if(!user) {
-            return res.status(401).json({message: 'User not found', status: 'error'});
+        if (!data.username || !data.password) {
+            return res.status(400).json({ message: 'Username and password are required', status: 'error' });
         }
 
-        if(!bcryptjs.compare(data.password, user.password)) {
-            return res.status(401).json({message: 'Password incorrect', status: 'error'});
+        // ابتدا یوزر را بر اساس نام کاربری جستجو می‌کنیم
+        const user = await User.findOne({ username: data.username });
+
+        if (!user) {
+            return res.status(401).json({ message: 'User not found', status: 'error' });
         }
 
+        // مقایسه پسورد وارد شده با پسورد هش شده ذخیره شده در دیتابیس
+        const isPasswordValid = await bcryptjs.compare(data.password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Password incorrect', status: 'error' });
+        }
+
+        // اطلاعات یوزر را آماده کرده و پسورد را حذف می‌کنیم
         const user_data = user.toObject();
         delete user_data.password;
-        user_data.token = jwt.sign(user_data, token_secret, {expiresIn: '1h'});
 
-        await res.status(200).json({message: 'User authenticated', status: 'ok', user: user_data});
+        // ایجاد توکن JWT
+        user_data.token = jwt.sign(user_data, token_secret, { expiresIn: '1h' });
 
-    } catch(error) {
-        res.status(500).json({message: error.message, status: 'error'});
+        return res.status(200).json({
+            message: 'User authenticated',
+            status: 'ok',
+            user: user_data,
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message, status: 'error' });
         console.error(`Error: ${error.message}`);
     }
-
 });
+
 
 router.get('/verify', verifyToken, (req, res) => {
     res.status(200).json({message: 'Token verified', status: 'ok', user: req.user});

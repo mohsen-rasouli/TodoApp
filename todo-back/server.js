@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
+
 require('dotenv').config();
 
 const app = express();
@@ -25,6 +27,7 @@ init_database();
 
 // Middlewares
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
@@ -53,6 +56,6 @@ app.get('/env', (req, res) => {
 })
 
 // Server listening
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+app.listen(3003, () => {
+  console.log('Server is running on port 3003');
 });
